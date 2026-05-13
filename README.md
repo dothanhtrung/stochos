@@ -2,7 +2,7 @@
 
 > **stochos** (/'sto.xos/) — from Greek *στόχος*: aim, target, goal.
 
-Keyboard-driven mouse control overlay for Wayland and X11. OSS alternative to [mouseless](https://mouseless.click).
+Keyboard-driven mouse control overlay for Wayland, X11, and macOS. OSS alternative to [mouseless](https://mouseless.click).
 
 ![example](example.gif)
 
@@ -11,6 +11,8 @@ Displays a letter grid over your screen. Type a two-key combo to jump to a cell,
 **Wayland:** Tested on **Hyprland**. Should work on any wlroots-based compositor with `zwlr_layer_shell_v1` and `zwlr_virtual_pointer_v1`.
 
 **X11:** Tested on **i3**. Should work on any X11 window manager with the XTest extension.
+
+**macOS:** Single-display only. Requires Accessibility permission (see Setup → macOS below). Cold-start launches dismiss Control Center / WiFi-brightness widgets; other system menus and notification center are unaffected.
 
 ## Install
 
@@ -31,9 +33,10 @@ From source:
 ```sh
 git clone https://github.com/museslabs/stochos
 cd stochos
-cargo build --release                                          # both backends
+cargo build --release                                          # Linux: both backends
 cargo build --release --no-default-features --features wayland # Wayland only
 cargo build --release --no-default-features --features x11     # X11 only
+cargo build --release --no-default-features                    # macOS
 ```
 
 ## Setup
@@ -53,6 +56,20 @@ Bind it to a key in `~/.config/i3/config`:
 ```
 bindsym Super_L exec stochos
 ```
+
+### macOS
+
+Bind it to a key with your launcher of choice (Raycast, skhd, Aerospace, etc.). For example, in `~/.aerospace.toml`:
+
+```toml
+alt-enter = 'exec-and-forget /usr/local/bin/stochos'
+```
+
+On first launch, macOS will prompt for **Accessibility** permission. Open System Settings → Privacy & Security → Accessibility and enable the binary (or the terminal you launched from). stochos uses the permission to capture global keystrokes via `CGEventTap` and to synthesize mouse events via `CGEventPost`.
+
+If `CGEventTapCreate failed` is printed instead, also enable the binary under Input Monitoring.
+
+Released binaries are not codesigned with a Developer ID, so after every upgrade macOS treats the new binary as a different program and re-prompts for Accessibility (and Input Monitoring, if applicable). Re-enable it in System Settings each time. Install via the `curl | sh` command above — `curl` does not set the Gatekeeper quarantine attribute, so the binary runs without a "cannot be opened" prompt.
 
 ## Usage
 
