@@ -428,6 +428,10 @@ impl Default for Config {
 }
 
 impl Config {
+    pub fn default_toml() -> anyhow::Result<String> {
+        Ok(toml::to_string_pretty(&Config::default())?)
+    }
+
     fn load() -> Self {
         let path = config_path();
         match std::fs::read_to_string(&path) {
