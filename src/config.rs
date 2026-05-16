@@ -409,11 +409,27 @@ impl Default for BisectConfig {
 
 #[derive(Debug, Serialize, Deserialize)]
 #[serde(default)]
+pub struct MacrosConfig {
+    /// 1.0 = recorded speed, 2.0 = twice as fast, 0.0 or negative = instant (no waits).
+    pub playback_speed: f32,
+}
+
+impl Default for MacrosConfig {
+    fn default() -> Self {
+        Self {
+            playback_speed: 1.0,
+        }
+    }
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+#[serde(default)]
 pub struct Config {
     pub grid: GridConfig,
     pub bisect: BisectConfig,
     pub keys: KeyBindings,
     pub colors: Colors,
+    pub macros: MacrosConfig,
     pub font_size: u32,
     pub sub_hint_font_size: Option<u32>,
     pub panel_font_size: Option<u32>,
@@ -426,6 +442,7 @@ impl Default for Config {
             bisect: BisectConfig::default(),
             keys: KeyBindings::default(),
             colors: Colors::default(),
+            macros: MacrosConfig::default(),
             font_size: 2,
             sub_hint_font_size: None,
             panel_font_size: None,
@@ -469,6 +486,14 @@ impl Config {
         self.panel_font_size
             .or(self.sub_hint_font_size)
             .map_or_else(|| self.font_size(), clamp_scale)
+    }
+
+    pub fn macro_playback_speed(&self) -> f32 {
+        if self.macros.playback_speed.is_nan() {
+            1.0
+        } else {
+            self.macros.playback_speed
+        }
     }
 
     pub fn hints(&self) -> &[char] {
