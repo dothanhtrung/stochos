@@ -131,6 +131,8 @@ An alternative mode for direct keyboard-driven cursor movement. Instead of selec
 
 **Limitations:** drag and text selection are not available in free mode. Use normal mode for those actions.
 
+**Key repeat cadence:** On Wayland the overlay drives its own repeat (300 ms delay, 25 Hz). On macOS and X11 the OS provides repeats, so the initial delay and rate follow your system keyboard settings (System Settings → Keyboard on macOS, `xset r rate` on X11).
+
 ### Macros
 
 Record multi-step mouse sequences for replay.
